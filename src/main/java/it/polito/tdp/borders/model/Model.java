@@ -2,6 +2,7 @@ package it.polito.tdp.borders.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +12,9 @@ import org.jgrapht.Graphs;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
+import org.jgrapht.traverse.DepthFirstIterator;
+import org.jgrapht.traverse.GraphIterator;
 
 import it.polito.tdp.borders.db.BordersDAO;
 
@@ -101,6 +105,46 @@ public class Model {
 				new ConnectivityInspector<Country, DefaultEdge>(this.grafo);
 		
 		return ci.connectedSets().size();
+	}
+
+	public List<Country> getVertici() {
+		
+		List<Country> stati = new ArrayList<Country>();
+		
+		for(Country c : this.grafo.vertexSet())
+			stati.add(c);
+		return stati;
+	}
+	/*
+	 * questa cosa fa la stessa cosa che dovrebbe fare un deepfirstiterator o un breadthfirstiterator
+	 * o meglio produce una soluzione equivalente
+	 */
+	public Set<Country> getRaggiungibili(Country stato) {
+		
+		ConnectivityInspector<Country, DefaultEdge> ci = 
+				new ConnectivityInspector<Country, DefaultEdge>(this.grafo);
+		
+		return ci.connectedSetOf(stato);
+		
+	}
+	
+	public List<Country> getDeepOrBreadth(Country stato) {
+		
+		List<Country> visitati = new LinkedList<Country>();
+		
+		GraphIterator<Country, DefaultEdge> df = new DepthFirstIterator<>(this.grafo, stato);
+		//GraphIterator<Country, DefaultEdge> bf = new BreadthFirstIterator<>(this.grafo, stato);
+		
+		while(df.hasNext()) {
+			visitati.add(df.next());
+		}
+		/*
+		while(bf.hasNext()) {
+			visitati.add(bf.next());
+		}
+		*/
+		return visitati;
+			
 	}
 
 }
